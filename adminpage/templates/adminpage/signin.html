@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <!-- Favicon icon -->
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'adminpage/assets/images/favicon.png' %}">
+    <title>Đăng Nhập Giáo Xứ Nam Hải</title>
+    
+    <!-- page css -->
+    <link href="{% static 'adminpage/dist/css/pages/login-register-lock.css' %}" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="{% static 'adminpage/dist/css/style.min.css' %}" rel="stylesheet">
+    <script src="{% static  'homepage/js/jquery.min.js' %}"></script>
+    <script src="{% static 'adminpage/assets/node_modules/jquery/jquery-3.2.1.min.js' %}"></script>
+    
+    
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+</head>
+
+<body class="skin-default card-no-border">
+    <!-- ============================================================== -->
+    <!-- Preloader - style you can find in spinners.css -->
+    <!-- ============================================================== -->
+    <div class="preloader">
+        <div class="loader">
+            <div class="loader__figure"></div>
+            <p class="loader__label">Elite admin</p>
+        </div>
+    </div>
+    <!-- ============================================================== -->
+    <!-- Main wrapper - style you can find in pages.scss -->
+    <!-- ============================================================== -->
+    <section id="wrapper">
+        <div class="login-register" style="background-image:url(/media/img/login-register.jpg);">
+            <div class="login-box card">
+                <div class="card-body">
+                    <h3 class="text-center m-b-20" style="font-weight: bold;">GIÁO XỨ NAM HẢI</h3>
+                    <hr>
+                    {% if mes %}
+                        <p style="color: red;font-size: 12pt;">{{mes}}</p>
+                    {% endif %}
+                    <form class="form-horizontal form-material" id="loginform" method="post">
+                        {% csrf_token %}
+                        <h3 class="text-center m-b-20">Đăng Nhập</h3>
+                        <div class="form-group ">
+                            <div class="col-xs-12">
+                                <input class="form-control" type="text" name="username" required placeholder="Tài Khoản"> </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-xs-12">
+                                <input id='password' class="form-control" type="password" name="password" required placeholder="Mật Khẩu"> 
+                                
+                            </div>  
+                        <br>
+                        <div class="form-group">
+                            
+                            <div class="col-xs-12" >
+                            
+                                <label   class="cart-buttons" style="width: 100%; cursor: pointer;margin-top: 7px; margin-right: 20px; text-align: right;">
+                                    Ẩn/ Hiện mật khẩu <i onclick="toogle('password')" id="passeye" class="fa fa-eye-slash"></i>
+                                </label>
+                            </div>         
+                        </div>
+                        <script>
+                                        
+                            function toogle(password){
+                                var x = document.getElementById(password);
+                                
+                                    if (x.type === "password") {
+                                        x.type = "text";
+                                        $('#passeye').removeClass('fa fa-eye-slash').addClass('fa fa-eye');
+                                    } else {
+                                        x.type = "password";
+                                        $('#passeye').removeClass('fa fa-eye').addClass('fa fa-eye-slash');
+                                    }
+                            }
+
+                        </script>
+                      
+                        <div class="form-group text-center">
+                            <div class="col-xs-12 p-b-20">
+                                <button class="btn btn-block btn-lg btn-info btn-rounded" type="submit">Đăng Nhập</button>
+                            </div>
+                        </div>
+                       
+                        
+                    </form>
+                  
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- ============================================================== -->
+    <!-- End Wrapper -->
+    <!-- ============================================================== -->
+    <!-- ============================================================== -->
+    <!-- All Jquery -->
+    <!-- ============================================================== -->
+    
+    <!-- Bootstrap tether Core JavaScript -->
+    <script src="{% static 'adminpage/assets/node_modules/popper/popper.min.js' %}"></script>
+    <script src="{% static 'adminpage/assets/node_modules/bootstrap/dist/js/bootstrap.min.js' %}"></script>
+    <script src="{% static  'adminpage/js/perfect-scrollbar.jquery.min.js' %}"></script>
+    <link rel="stylesheet" href="{% static  'homepage/css/bootstrap..min.css' %}">
+    <script src="{% static  'homepage/js/bootstrap.min.js' %}"></script>
+    <script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
+    <!--Custom JavaScript -->
+    <script type="text/javascript">
+        $(function() {
+            $(".preloader").fadeOut();
+        });
+        $(function() {
+            $('[data-toggle="tooltip"]').tooltip()
+        });
+        // ============================================================== 
+        // Login and Recover Password 
+        // ============================================================== 
+        $('#to-recover').on("click", function() {
+            $("#loginform").slideUp();
+            $("#recoverform").fadeIn();
+        });
+    </script>
+    
+</body>
+
+
+<!-- Mirrored from eliteadmin.themedesigner.in/demos/bt4/university/pages-login.html by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 12 May 2021 05:58:31 GMT -->
+</html>

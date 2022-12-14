@@ -1,0 +1,507 @@
+
+{% extends 'adminpage/baseadmin.html' %}
+{% load static %}
+{% block title %} Danh sách người dùng {% endblock %}
+{% block cssjs %} 
+
+<link href="{% static  'adminpage/node_modules/datatables.net-bs4/css/dataTables.bootstrap4.css' %}" rel="stylesheet">
+<link href="{% static  'adminpage/node_modules/datatables.net-bs4/css/responsive.dataTables.min.css' %}" rel="stylesheet">
+
+<script src="{% static  'adminpage/node_modules/datatables.net/js/jquery.dataTables.min.js' %}"></script>
+<script src="{% static  'adminpage/node_modules/datatables.net-bs4/js/dataTables.responsive.min.js' %}"></script>
+
+    <script src="https://cdn.datatables.net/buttons/1.5.1/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.5.1/js/buttons.flash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.5.1/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.5.1/js/buttons.print.min.js"></script>
+
+    
+
+{% endblock %}
+{% block body %}
+
+<div class="page-wrapper">
+    <!-- ============================================================== -->
+    <!-- Container fluid  -->
+    <!-- ============================================================== -->
+    <div class="container-fluid">
+        <!-- ============================================================== -->
+        <!-- Bread crumb and right sidebar toggle -->
+        <!-- ============================================================== -->
+        <div class="row page-titles">
+            <div class="col-md-5 align-self-center">
+                
+                
+            </div>
+            <div class="col-md-7 align-self-center text-right">
+                <div class="d-flex justify-content-end align-items-center">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="javascript:void(0)">Người dùng</a></li>
+                        <li class="breadcrumb-item active">Danh sách người dùng</li>
+                    </ol>
+
+                </div>
+            </div>
+        </div>
+        <!-- ============================================================== -->
+        <!-- End Bread crumb and right sidebar toggle -->
+        <!-- ============================================================== -->
+        <!-- ============================================================== -->
+        <!-- Start Page Content -->
+        <!-- ============================================================== -->
+        
+        <div class="row">
+            <div class="col-12">
+                <!-- table responsive -->
+                <div class="card">
+                    <div class="card-body">
+                        <h1 style="text-align: center; font-family: Arial, Helvetica, sans-serif;" class="card-title">Danh sách người dùng toàn hệ thống </h1>
+                        
+                        
+                        <button onclick="openpop(0)" style="float: right !important; " type="button" class="btn btn-info btn-rounded m-t-10 float-left" data-toggle="modal" data-target="#add-contact">Thêm người dùng mới</button>
+                        
+                        <div class="dataTables_wrapper container-fluid dt-bootstrap4 no-footer" >  
+                            <select id="page_len" style="float: left !important; " type="button" class="btn btn-primary dropdown-toggle"> 
+                                <option style="padding: 5px;" value=10>Xem 10 dòng</option>
+                                <option style="padding: 5px;" value=50>Xem 50 dòng</option>
+                                <option style="padding: 5px;" value=100>Xem 100 dòng</option>
+                                <option style="padding: 5px;" value=200>Xem 200 dòng</option>
+                                <option style="padding: 5px;" value=1000>Xem 1000 dòng</option>
+                                <option style="padding: 5px;" value=-1> Xem Tất cả </option>
+                            </select> 
+                        </div>
+                        
+                        
+
+                      
+                        
+                        <div class="table-responsive m-t-40">
+                            <table id="config-table" class="table display table-bordered table-striped no-wrap">
+                                <thead>
+                                    <tr>
+                                        
+                                        <th>ID </th>
+                                        <th>Loại tài khoản </th>
+                                        <th>Tên đăng nhập </th>
+                                        <th>Họ và chữ lót </th>
+                                        <th>Tên </th>
+                                     
+                                        <th>Kích hoạt</th>
+                                        <th>Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for clsusers in  clsuserss %}
+                                    <tr>
+                                        
+                                        <td>{{clsusers.user.pk}}</td>
+                                        <td>{{clsusers.typeacc.name}}</td>
+                                        <td>{{clsusers.user.username}}</td>
+                                        <td>{{clsusers.user.last_name}}</td>
+                                        <td>{{clsusers.user.first_name}}</td>
+                                
+                                        {% if clsusers.user.pk != clsusers.user.pk  %}
+                                            <td>
+                                                {% if clsusers.user.is_active == True %}
+                                                    <input id="checkbox_{{clsusers.user.pk}}" type="checkbox" checked> <label id="lable_{{clsusers.user.pk}}"> Kích hoạt</label> 
+                                                {% else %}
+                                                    <input id="checkbox_{{clsusers.user.pk}}" type="checkbox" ><label id="lable_{{clsusers.user.pk}}"> Chưa Kích hoạt</label> 
+                                                {% endif %}
+                                                
+                                            </td>
+                                        {% else %}
+                                            <td>
+                                                {% if clsusers.user.is_active == True %}
+                                                    Kích hoạt
+                                                {% else %}
+                                                    Chưa Kích hoạt
+                                                {% endif %}
+                                            
+                                            </td>
+                                        {% endif %}
+                                        <script>
+                                            
+                                            $('#checkbox_{{clsusers.user.pk}}').change(function (){
+                                                var check_value = $('#checkbox_{{clsusers.user.pk}}').val()
+                                                if ($('#checkbox_{{clsusers.user.pk}}').is(":checked"))
+                                                        {
+                                                            check_value = 'on'
+                                                        }
+                                                        else{
+                                                            check_value = 'off'
+                                                        }
+                                                $.ajax({
+                                                    url: '{% url "adminpage:user_check_checkbox" %}',
+                                                    data:{
+                                                        'check_value': check_value,
+                                                        'userpk' : '{{clsusers.user.pk}}'
+                                                    },
+                                                    dataType: 'json',
+                                                    success: function(data){
+                                                        if(data.flag)
+                                                        {  
+                                                        
+                                                        //    window.location.reload()
+                                                            $('#lable_{{clsusers.user.pk}}').html(data.s)
+                                                        }
+                                                        else
+                                                        {
+                                                            
+                                                        }
+                                                    }
+                                                })
+                                            })
+
+                                            
+                                        </script>
+
+
+                                        <td>
+                                            <a onclick="openpop('{{clsusers.user.pk}}')" href="#0"><i class="ti-pencil"></i></a>
+                                            <a onclick="deletepoptopic{{clsusers.user.pk}}()" href="#" ><i class="ti-trash"></i></a>&nbsp;
+                                        </td>
+                                        
+                                    </tr>
+
+                                    <div class="mfp-content">
+                                        <div id="topic_{{clsusers.user.pk}}" class="mfp-hide" style="background: white;padding: 15px;border-radius: 5px;text-align: left;max-width: 80%;margin: 40px auto;position: relative;text-align: center;">
+                                            <div class="card-body">
+                                                
+                                                  <img style="width:100px" src="/media/default/gif/warning.gif">
+                                                  <h2>Bạn có chắc muốn xóa <strong style="font-weight: bold;"> {{clsusers.user.username}} </strong> không?</h2>
+                                                  <p class="lead text-muted " style="display: block;color: red;">
+                                                   Thao tác này bạn cần nhập lại mật khẩu của tài khoản quản trị mà bạn đang sử dụng
+                                                </p>
+                                                  <div class="card-body" align="center">
+                                                    <div class="row"align="center" style="max-width: 600px;">                                           
+                                                        <div class="col-12" style="max-width: 500px;">
+                                                            <form method="POST" enctype="multipart/form-data" id='mainform' action="{% url 'adminpage:user_delete' clsusers.user.pk %}" >
+                                                                {% csrf_token %}
+                                                                <div class="form-row"  >
+                                
+                                                                    <div class="form-group col-md-12">
+                                                                        
+                                                                    </div>
+                                                                    
+                                                                    <div class="form-group col-md-3">
+                                                                        <label for="inputAddress">Xác nhận password <red style="color: red"> (*)</red></label>
+                                                                    </div>
+                                                                    <div class="form-group col-md-9">
+                                                                        <input id="adminpass" name="adminpass" required style="text-align:center" type="password" class="form-control"  placeholder="Mật khẩu của tài khoản của bạn">
+                                                                    </div>
+                                                                <div class="form-group col-md-12">
+                                                                    <button style="margin-right: 20px;" type="button" onclick="closepop()" class="btn btn-primary">Không xóa </button>
+                                                                    <button type="submit" class="btn btn-danger">Có hãy xóa nó</button>
+                                                                </div>
+                                                               
+                                                               
+                                                            
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                   
+                                                   
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <script>
+                                        function deletepoptopic{{clsusers.user.pk}}()
+                                        {
+                                            $.magnificPopup.open({
+                                            items: {
+                                            src: '#topic_{{clsusers.user.pk}}'
+                                                },
+                                            closeBtnInside: true,
+                                            type: 'inline'
+                                            });
+                                        }
+                                    </script>
+
+                                    {% endfor %}
+
+                                    
+                                        
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End Page Content -->
+        <!-- ============================================================== -->
+        <!-- ============================================================== -->
+        <!-- Right sidebar -->
+        <!-- ============================================================== -->
+        <!-- .right-sidebar -->
+        <div class="right-sidebar">
+            <div class="slimscrollright">
+                <div class="rpanel-title"> Chủ đề giao diện <span><i class="ti-close right-side-toggle"></i></span> </div>
+                <div class="r-panel-body">
+                    <ul id="themecolors" class="m-t-20">
+                        <li><b>Thanh điều hướng sáng</b></li>
+                        <li><a href="javascript:void(0)" data-skin="skin-default" class="default-theme">1</a></li>
+                        <li><a href="javascript:void(0)" data-skin="skin-green" class="green-theme">2</a></li>
+                        <li><a href="javascript:void(0)" data-skin="skin-red" class="red-theme">3</a></li>
+                        <li><a href="javascript:void(0)" data-skin="skin-blue" class="blue-theme">4</a></li>
+                        <li><a href="javascript:void(0)" data-skin="skin-purple" class="purple-theme">5</a></li>
+                        <li><a href="javascript:void(0)" data-skin="skin-megna" class="megna-theme">6</a></li>
+                        <li class="d-block m-t-30"><b>Thanh điều hướng tối</b></li>
+                        <li><a href="javascript:void(0)" data-skin="skin-default-dark" class="default-dark-theme ">7</a></li>
+                        <li><a href="javascript:void(0)" data-skin="skin-green-dark" class="green-dark-theme">8</a></li>
+                        <li><a href="javascript:void(0)" data-skin="skin-red-dark" class="red-dark-theme">9</a></li>
+                        <li><a href="javascript:void(0)" data-skin="skin-blue-dark" class="blue-dark-theme">10</a></li>
+                        <li><a href="javascript:void(0)" data-skin="skin-purple-dark" class="purple-dark-theme">11</a></li>
+                        <li><a href="javascript:void(0)" data-skin="skin-megna-dark" class="megna-dark-theme ">12</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- ============================================================== -->
+        <!-- End Right sidebar -->
+        <!-- ============================================================== -->
+    </div>
+    <!-- ============================================================== -->
+    <!-- End Container fluid  -->
+    <!-- ============================================================== -->
+</div>
+
+<div class="mfp-content">
+    <div id="rrr" class="mfp-hide" style="background: white;padding: 15px;border-radius: 5px;text-align: left;max-width: 900px;width: 80%;margin: 40px auto;position: relative;text-align: center;">
+        <div class="card-body">
+            <div class="row">                                           
+                <div class="col-12">
+                    <form method="POST" enctype="multipart/form-data" id='mainform' >
+                        {% csrf_token %}
+                        <div class="form-row">
+
+                            <div class="form-group col-md-12">
+                                
+                            </div>
+
+                            <div class="form-group col-md-3">
+                                <label for="inputAddress">Loại tài khoản<red style="color: red"> (*)</red></label>
+                            </div>
+                            <div class="form-group col-md-9">
+                                <select id="typeacc" name="typeacc" class="custom-select form-control" >
+                                    {% for type in types %}
+                                        <option value="{{type.id}}">{{type.name}}</option>
+                                    {% endfor %}     
+                                </select>
+                            </div>
+                            
+
+                            
+
+                            <div class="form-group col-md-3">
+                                <label for="inputAddress">Tên đăng nhập<red style="color: red"> (*)</red></label>
+                            </div>
+                            <div class="form-group col-md-9">
+                                <input id="username" name="username" required style="text-align:center" type="text" class="form-control"  placeholder="Text">
+                                <label id="error"></label>
+                            </div>
+                            
+                            <script>
+                                $('#username').change(function(){
+                                    username = $('#username').val()
+                                    $.ajax({
+                                            url: '{% url "adminpage:validate_username" %}',
+                                            data:{
+                                                'username': username
+                                            },
+                                            dataType: 'json',
+                                            success: function(data){
+                                                if(data.flag)
+                                                {  
+                                                    $('#error').html('Username đã tồn tại')
+                                                    
+                                                }
+                                                else
+                                                {
+                                                    $('#error').html('')
+                                                }
+                                            }
+                                    })
+                                })
+                            </script>
+
+                            <div class="form-group col-md-3">
+                                <label for="inputAddress">Họ<red style="color: red"> (*)</red></label>
+                            </div>
+                            <div class="form-group col-md-9">
+                                <input id="last_name" name="last_name" required style="text-align:center" type="text" class="form-control"  placeholder="Text">
+                            </div>
+                            
+                            <div class="form-group col-md-3">
+                                <label for="inputAddress">Tên<red style="color: red"> (*)</red></label>
+                            </div>
+                            <div class="form-group col-md-9">
+                                <input id="first_name" name="first_name" required style="text-align:center" type="text" class="form-control"  placeholder="Text">
+                            </div>
+
+                            <div class="form-group col-md-3">
+                                <label for="inputAddress">Mật khẩu<red style="color: red"> (*)</red></label>
+                            </div>
+                            <div class="form-group col-md-9">
+                                <input id="password" name="password" required style="text-align:center" type="text" class="form-control"  placeholder="Text">
+                            </div>
+
+                            
+
+                        </div>
+                       
+                        <br>
+                        <div style="display: none;visibility: hidden;">
+                            <input type='text' name="type" id="type" value=0 >
+                        </div>
+                       
+                        
+                        <button id="submit" type="submit" class="btn btn-primary">Xác nhận</button>
+                        
+                    
+                    
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openpop(id){
+                if(id == 0 )
+                {
+                   $('#typeacc').val(2)
+                   $('#username').val('')
+                   $('#last_name').val('')
+                   $('#first_name').val('')
+                   $('#password').val('')
+                    
+                   $.magnificPopup.open({
+                                    items: {
+                                    src: '#rrr'
+                                        },
+                                    closeBtnInside: true,
+                                    type: 'inline'
+                                    });
+                }
+                else
+                {
+                    $('#type').val(id)
+                    // userid = $('#type').val()
+                    $.ajax({
+                            url: '{% url "adminpage:edit_user" %}',
+                            data:{
+                                'id': id
+                            },
+                            dataType: 'json',
+                            success: function(data){
+                                if(data.flag)
+                                {  
+                                    $('#typeacc').val(data.typeacc)
+                                    $('#username').val(data.username)
+                                    $('#last_name').val(data.last_name)
+                                    $('#first_name').val(data.first_name)
+                                    $('#password').val(data.password)
+                                       
+                                    $.magnificPopup.open({
+                                    items: {
+                                    src: '#rrr'
+                                        },
+                                    closeBtnInside: true,
+                                    type: 'inline'
+                                    });
+                                            }
+                                            else
+                                            {
+                                                
+                                            }
+                                        }
+                                })
+                }
+             
+
+            }
+
+        function closepop()
+            {
+                $.magnificPopup.close();
+            }
+</script>
+
+
+
+<script>
+    $(function () {
+        $('#myTable').DataTable();
+        var table = $('#example').DataTable({
+            "columnDefs": [{
+                "visible": false,
+                "targets": 2
+            }],
+            "order": [
+                [0, 'asc']
+            ],
+            "displayLength": 10,
+            "drawCallback": function (settings) {
+                var api = this.api();
+                var rows = api.rows({
+                    page: 'current'
+                }).nodes();
+                var last = null;
+                api.column(2, {
+                    page: 'current'
+                }).data().each(function (group, i) {
+                    if (last !== group) {
+                        $(rows).eq(i).before('<tr class="group"><td colspan="5">' + group + '</td></tr>');
+                        last = group;
+                    }
+                });
+            }
+        });
+        // Order by the grouping
+        $('#example tbody').on('click', 'tr.group', function () {
+            var currentOrder = table.order()[0];
+            if (currentOrder[0] === 2 && currentOrder[1] === 'asc') {
+                table.order([2, 'desc']).draw();
+            } else {
+                table.order([2, 'asc']).draw();
+            }
+        });
+        // responsive table
+        var this_table = $('#config-table').DataTable({
+            responsive: true,
+            
+            dom: 'Bfrtip',
+            "order": [[ 0, "desc" ]],
+            buttons: [
+                'copy', 'csv', 'excel', 'pdf', 'print'
+            ]
+        });
+        this_table.page.len(10).draw();
+        
+        $('#page_len').change(function()
+        {
+            var lenpage = $('#page_len').val()
+            this_table.page.len( lenpage ).draw();
+        });
+        
+        $('.buttons-copy, .buttons-csv, .buttons-print, .buttons-pdf, .buttons-excel').addClass('btn btn-primary mr-1');
+    });
+
+
+
+
+
+
+</script>
+
+
+
+ 
+
+{% endblock %}

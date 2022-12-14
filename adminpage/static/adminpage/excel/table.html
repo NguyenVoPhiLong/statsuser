@@ -1,0 +1,390 @@
+<!doctype html>
+<html>
+
+<!-- Mirrored from www.jqueryscript.net/demo/jQuery-Plugin-For-Dynamic-Spreadsheet-like-Data-Grid-jExcel/ by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 12 Dec 2022 07:25:53 GMT -->
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>jQuery jExcel Plugin Examples</title>
+<link href="../../../jquery.app/jqueryscripttop.css" rel="stylesheet" type="text/css">
+<link rel="stylesheet" href="../../../cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.0/spectrum.min.css" type="text/css" />
+<link href="dist/css/jquery.jexcel.css" rel="stylesheet" type="text/css">
+<link href="dist/css/jquery.jcalendar.css" rel="stylesheet" type="text/css">
+<style>
+body { background-color:#fafafa; font-family:'Open Sans';}
+.container { margin:150px auto; max-width:960px;}
+</style>
+</head>
+
+<body>
+<div id="jquery-script-menu">
+<div class="jquery-script-center">
+<ul>
+<li><a href="https://www.jqueryscript.net/table/jQuery-Plugin-For-Dynamic-Spreadsheet-like-Data-Grid-jExcel.html">Download This Plugin</a></li>
+<li><a href="https://www.jqueryscript.net/">Back To jQueryScript.Net</a></li>
+</ul>
+<div class="jquery-script-ads"><script type="text/javascript"><!--
+google_ad_client = "ca-pub-2783044520727903";
+/* jQuery_demo */
+google_ad_slot = "2780937993";
+google_ad_width = 728;
+google_ad_height = 90;
+//-->
+</script>
+<script type="text/javascript" src="../../../pagead2.googlesyndication.com/pagead/f.txt">
+</script></div>
+<div class="jquery-script-clear"></div>
+</div>
+</div>
+<div class="container">
+<h1>jQuery jExcel Plugin Examples</h1>
+<h2>Basic Demo</h2>
+<div id="demo1"></div>
+<h2>With formulas</h2>
+<div id="demo2"></div>
+<h2>From an external CSV file</h2>
+<div id="demo3"></div>
+<p><button id='download'>Export my spreadsheet as CSV</button></p>
+<h2>With date picker</h2>
+<div id="demo4"></div>
+<h2>With color picker</h2>
+<div id="demo5"></div>
+<h2>With input mask</h2>
+<div id="demo6"></div>
+<h2>With dropdown</h2>
+<div id="demo7"></div>
+<h2>onchange handler</h2>
+<div id="container"></div>
+<div id="demo8"></div>
+</div>
+<script src="../../../code.jquery.com/jquery-1.12.4.min.js"></script>
+<script src="../../../code.highcharts.com/highcharts.html"></script>
+<script src="../../../cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.3/jquery.mask.min.js"></script>
+<script src="../../../cdnjs.cloudflare.com/ajax/libs/jquery-csv/0.71/jquery.csv-0.71.min.js"></script>
+<script src="../../../cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.0/spectrum.min.js"></script>
+<script src="dist/js/jquery.jexcel.js"></script>
+<script src="dist/js/jquery.jcalendar.js"></script>
+<script>
+data1 = [
+    ['Google', 1998, 807.80],
+    ['Apple', 1976, 116.52],
+    ['Yahoo', 1994, 38.66],
+];
+
+$('#demo1').jexcel({ data:data1, colWidths: [ 300, 80, 100 ] });
+
+var formulas = {
+    /**
+     * Custom method: SUM - Example: =SUM(C1:C10), =SUM(A1,A2,A3)
+     *
+     * @param string formula
+     * @return total
+     */
+    sum : function (formula) {
+        // Get main table id
+        var id = $(this.instance).prop('id');
+        // Total to be returned
+        var total = 0;
+        // Check sum type
+        var d = formula.split(/:/);
+        // Which sum to be used
+        if (d.length < 2) {
+            // Explode by comman and sum all columns in the formula
+            d = formula.split(',');
+            $.each($(d), function (k, v) {
+               v = parseInt($('#' + id).jexcel('getValue', v));
+               total += v;
+            });
+        } else {
+            t1 = d[0].match(/[a-zA-Z]+/g);
+            t2 = d[1].match(/[a-zA-Z]+/g);
+            // Sum vertical or horizontal
+            if (t1[0] == t2[0]) {
+                // Some all cells in a vertical way
+                co = t1;
+                t1 = d[0].match(/[0-9]+/g);
+                t2 = d[1].match(/[0-9]+/g);
+                for (i = t1; i <= t2; i++) {
+                    v = parseInt($('#' + id).jexcel('getValue', co + i));
+                    total += v;
+                }
+            } else {
+                // Som all cells in a horizontal way
+                t1 = $('#' + id).jexcel('id', d[0]).split('-');
+                t2 = $('#' + id).jexcel('id', d[1]).split('-');
+
+                for (i = t1[0]; i <= t2[0]; i++) {
+                    v = parseInt($('#' + id).jexcel('getValue', i + '-' + t1[1]));
+                    total += v;
+                }
+            }
+        }
+
+        try {
+            return total;
+        } catch (e) {
+            return null;
+        }
+    }
+}
+
+var data2 = [
+    ['Furnace',1,10000],
+    ['Tower',2,6000],
+    ['Drum',3,5000],
+    ['Pump',4,4000],
+    ['Total','=SUM(B1:B4)','=(C1+C2+C3+C4)']
+]
+
+$('#demo2').jexcel({
+    data:data2,
+    formulas: formulas,
+    colHeaders: ['Equipement','Quantity', 'Price'],
+    colWidths: [ 400, 100, 200 ],
+    colWidths: [300, 150, 150, 150, 150],
+});
+
+$('#demo3').jexcel({
+    csv:'demo.csv',
+    csvHeaders:true,
+    colWidths: [70, 200, 300],
+});
+
+$('#download').on('click', function () {
+    $('#demo3').jexcel('download');
+})
+
+data4 = [
+    ['Mazda', 2001, 2000, '2006-01-01'],
+    ['Pegeout', 2010, 5000, '2005-01-01'],
+    ['Honda Fit', 2009, 3000, '2004-01-01'],
+    ['Honda CRV', 2010, 6000, '2003-01-01'],
+];
+
+$('#demo4').jexcel({
+    data:data4,
+    colHeaders: ['Model', 'Price', 'Price', 'Date'],
+    colWidths: [ 300, 80, 100, 100 ],
+    columns: [
+        { type: 'text' },
+        { type: 'text' },
+        { type: 'text' },
+        { type: 'calendar', options: { format:'DD/MM/YYYY' } },
+    ]
+});
+
+var spectrumEditor = {
+    // Methods
+    closeEditor : function(cell, save) {
+        // Get value
+        var value = $(cell).find('.editor').spectrum('get').toHexString();
+
+        // Set visual value
+        $(cell).html(value);
+        $(cell).css('color', value);
+
+        // Close edition
+        $(cell).removeClass('edition');
+    },
+    openEditor : function(cell) {
+        var main = this;
+        // Get current content
+        var html = $(cell).html();
+
+        // Basic editor
+        var editor = document.createElement('div');
+        $(cell).html(editor);
+        $(editor).prop('class', 'editor');
+        $(editor).spectrum({ color:html, preferredFormat:'hex', hide: function(color) {
+            main.closeEditor($(cell), true);
+        }});
+        $(editor).spectrum('show');
+    },
+    getValue : function(cell) {
+        return $(cell).html();
+    },
+    setValue : function(cell, value) {
+        $(cell).html(value);
+        $(cell).css('color', value);
+        return true;
+    }
+}
+
+data5 = [
+    ['Google', '#542727'],
+    ['Yahoo', '#724f4f'],
+    ['Bing', '#b43131'],
+];
+
+$('#demo5').jexcel({
+    data:data5,
+    colHeaders: [ 'Name', 'Custom color' ],
+    colWidths: [ 300, 200 ],
+    columns: [
+        { type: 'text' },
+        { type: 'text', editor:spectrumEditor },
+    ]
+});
+
+data6 = [
+    ['3D Systems ', 'DDD', 15.08, 15.1, 0.01, 0.07],
+    ['3M', 'MMM', 178.34, 178.65, 0.49, 0.28],
+    ['58.com', 'ADR WUBA', 30.01, 29.1, -0.76, -2.55],
+    ['500.com', 'ADR WBAI', 13.48, 13.56, 0.1, 0.74],
+];
+
+// Create the spreadsheet based on data
+$('#demo6').jexcel({
+    data:data6,
+    colHeaders: ['Name', 'Symbol', 'Open', 'Close', '% Net', '% Change'],
+    colWidths: [ 300, 80, 100, 100, 100, 100 ],
+    columns: [
+              { type: 'text' },
+              { type: 'text' },
+              { type: 'text', mask:'#.###.00', options:{ reverse: true } },
+              { type: 'text', mask:'#.###.00', options:{ reverse: true } },
+              { type: 'text' },
+              { type: 'text' },
+              ]
+});
+
+// Live update of the settings
+$('#demo6').jexcel('updateSettings', {
+    cells: function (cell, col, row) {
+        // If the column is number 4 or 5
+        if (col == 4 || col == 5) {
+            val = $('#demo6').jexcel('getValue', $(cell));
+            // If the value lower than zero set fontcolor as red
+            if (val < 0) {
+                $(cell).css('color', '#ff0000');
+            } else {
+                // Otherwise as green
+                $(cell).css('color', '#249D7F');
+            }
+        }
+    }
+});
+
+data7 = [
+    ['Mazda', 1, 2000],
+    ['Mazda', 2, 2000],
+    ['Pegeout', 3, 5000],
+    ['Honda', 1, 3000],
+    ['Honda', 3, 6000],
+];
+
+$('#demo7').jexcel({
+    data:data7,
+    colHeaders: ['Model','Color'],
+    colWidths: [ 300, 80],
+    columns: [
+        { type: 'dropdown', source:['Mazda','Pegeout','Honda'] },
+        { type: 'dropdown', source:[{'id':1,'name':'Yellow'}, {'id':2,'name':'Black'}, {'id':3,'name':'Green'}] }
+    ]
+});
+
+
+var data8 = [
+    ['Tokyo', 7.0, 6.9, 9.5, 14.5, 18.2, 21.5, 25.2, 26.5, 23.3, 18.3, 13.9, 9.6],
+    ['New York', -0.2, 0.8, 5.7, 11.3, 17.0, 22.0, 24.8, 24.1, 20.1, 14.1, 8.6, 2.5],
+    ['Berlin', -0.9, 0.6, 3.5, 8.4, 13.5, 17.0, 18.6, 17.9, 14.3, 9.0, 3.9, 1.0],
+    ['London', 3.9, 4.2, 5.7, 8.5, 11.9, 15.2, 17.0, 16.6, 14.2, 10.3, 6.6, 4.8],
+];
+
+var update = function (obj, cel, val) {
+    // Get the cell position x, y
+    var id = $(cel).prop('id').split('-');
+    // If the related series does not exists create a new one
+    if (! chart.series[id[1]]) {
+        // Create a new series row
+        var row = [];
+        for (i = 1; i < data[id[1]].length; i++) {
+            row.push(parseFloat(data[id[1]][i]));
+        }
+        // Append new series to the chart
+        chart.addSeries({ name:data[id[1]][0], data:row });
+    } else {
+        // Update the value from the chart
+        chart.series[id[1]].data[id[0]].update({y:parseFloat(val)});
+    }
+}
+
+$('#demo8').jexcel({
+    data:data8,
+    onchange:update,
+    colHeaders: [ 'Country' ],
+    colWidths: [ 300 ]
+});
+
+// Kepp it global
+var chart = null;
+
+$(function () {
+    chart = Highcharts.chart('container', {
+        title: {
+            text: 'Monthly Average Temperature',
+            x: -20 //center
+        },
+        subtitle: {
+            text: 'Source: WorldClimate.com',
+            x: -20
+        },
+        xAxis: {
+            categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+        },
+        yAxis: {
+            title: {
+                text: 'Temperature (°C)'
+            },
+            plotLines: [{
+                value: 0,
+                width: 1,
+                color: '#808080'
+            }]
+        },
+        tooltip: {
+            valueSuffix: '°C'
+        },
+        legend: {
+            layout: 'vertical',
+            align: 'right',
+            verticalAlign: 'middle',
+            borderWidth: 0
+        },
+        series: [{
+            name: 'Tokyo',
+            data: [7.0, 6.9, 9.5, 14.5, 18.2, 21.5, 25.2, 26.5, 23.3, 18.3, 13.9, 9.6]
+        }, {
+            name: 'New York',
+            data: [-0.2, 0.8, 5.7, 11.3, 17.0, 22.0, 24.8, 24.1, 20.1, 14.1, 8.6, 2.5]
+        }, {
+            name: 'Berlin',
+            data: [-0.9, 0.6, 3.5, 8.4, 13.5, 17.0, 18.6, 17.9, 14.3, 9.0, 3.9, 1.0]
+        }, {
+            name: 'London',
+            data: [3.9, 4.2, 5.7, 8.5, 11.9, 15.2, 17.0, 16.6, 14.2, 10.3, 6.6, 4.8]
+        }]
+    });
+});
+</script>
+</script>
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-36251023-1']);
+  _gaq.push(['_setDomainName', 'jqueryscript.net']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</body>
+
+<!-- Mirrored from www.jqueryscript.net/demo/jQuery-Plugin-For-Dynamic-Spreadsheet-like-Data-Grid-jExcel/ by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 12 Dec 2022 07:25:59 GMT -->
+</html>
